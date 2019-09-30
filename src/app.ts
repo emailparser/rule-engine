@@ -1,0 +1,27 @@
+import express from "express";
+import compression from "compression"; 
+import bodyParser from "body-parser";
+import mongoose from "mongoose";
+import { MONGODB_URI } from "./util/secrets";
+
+
+// Create Express server
+const app = express();
+
+mongoose
+    .connect(MONGODB_URI, { useNewUrlParser: true, useCreateIndex: true })
+    .then(() => {
+        // console.log("Connected to MongoDB");
+    })
+    .catch((err) => {
+        // console.log("MongoDB connection error. Please make sure MongoDB is running. " + err);
+    });
+
+
+// Express configuration
+app.set("port", process.env.PORT || 3000);
+app.use(compression());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+export default app;
