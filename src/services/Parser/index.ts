@@ -92,7 +92,6 @@ export default class Parser{
             "STRING_AFTER": "stringAfter",
             "STRING_BEFORE": "stringBefore",
             "EXACT_PHRASE": "exactPhrase",
-            "REGEX_STRING": "regexString",
             "SPLIT_BY": "splitBy"
         };
         return methods[key];
@@ -147,10 +146,6 @@ export default class Parser{
         return str.match(regex);
     }
 
-    private pattern(text: string, parameters: {}): string{
-        return "-1";
-    }
-
 
     public stringBetween(text: string, parameters: any): string[]{
         const {before, after} = parameters;
@@ -188,13 +183,8 @@ export default class Parser{
         return [matches.pop().trim()];
     }
 
-    private exactPhrase(text: string, parameters: {}): string{
 
-        return "-1";
-    }
-
-    private regexString(text: string, parameters: {}): string{
-
-        return "-1";
+    public pattern(text: string, parameters: any): string[]{
+        return this.grabSub(text, parameters.pattern);
     }
 }

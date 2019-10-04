@@ -79,43 +79,15 @@ describe("Split after", () => {
     });
 });
 
-
-// parseconfig stór JSOON 
-parseConfig: {
-    date: {
-
-    }, 
-    rooms: {
-
-    }
-}
-
-// agencyFields
-
-// SPLIT_BY, STRING_BETWEEN, REGE_MATC .. 6 METHODS
-// HVERT method krefst ákveðinna parametra
-// t.d. STRING_BETWEEN þarf "before", "after"
-
-// þarf að velja return type
-
-// það á aðvera hægt að gera "sub recipes"
-
-{
-    agency: Objectid,
-    key: "rooms",
-    recipe: {}
-}
-
-{
-    agency: Objectid,
-    key: "name",
-    recipe: {}
-}
-
-{
-    agency: Objectid,
-    key: "name",
-    recipe: {}
-}
-
-AgencyFields.find({agency: _id})
+describe("Pattern", () => {
+    it("should return array of matches", async (done) => {
+        const someParam: any =  {
+            pattern: "\\d{2}-\\d{2}-\\d{4}"
+        };
+        const txt = "loreem ipsum 14-08-1994 ipsum lorem 99-22-1529";
+        const parser = new Parser({}, {agency: OID, hotel: OID});
+        const extract = parser.pattern(txt, someParam);
+        expect(extract).toStrictEqual(["14-08-1994", "99-22-1529"]);
+        done();
+    });
+});
