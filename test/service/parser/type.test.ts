@@ -189,3 +189,188 @@ describe("Recursive string -> string -> array -> object", () => {
         next();
     }); 
 });
+
+describe("Boolean retrieveType", () => {
+    it("returns true if retrieve type is bool" , async (done) => {
+        const recipe: any = {
+            instruction: "PATTERN",
+            retrieveType: "bool",
+            parameters: {
+                pattern: "yolo"
+            }
+        };  
+        const txt = "kalli he yolo what he is going yolo on he";
+        const parser = new Parser({}, {agency: OID, hotel: OID});
+        const extract = await parser.intBoolean(recipe, txt);
+        expect(extract).toEqual(true);
+        done();
+    });
+
+    it("returns false if retrieve type is bool" , async (done) => {
+        const recipe: any = {
+            instruction: "PATTERN",
+            retrieveType: "bool",
+            parameters: {
+                pattern: "yolo"
+            }
+        };  
+        const txt = "some text that does not match";
+        const parser = new Parser({}, {agency: OID, hotel: OID});
+        const extract = await parser.intBoolean(recipe, txt);
+        expect(extract).toEqual(false);
+        done();
+    });
+
+    it("throws error if sub is not array", async (done) => {
+        const recipe: any = {
+            instruction: "PATTERN",
+            retrieveType: "bool",
+            parameters: {
+                pattern: "yolo"
+            },
+            sub: {}
+        };  
+        const txt = "some text that does not match";
+        const parser = new Parser({}, {agency: OID, hotel: OID});
+        async function check(){
+            try {
+                await parser.intBoolean(recipe, txt);
+            } catch (e){
+                throw Error("test");
+            }
+        }
+        await expect(check()).rejects.toThrow(Error);
+        done();
+    });
+
+    it("throws error if sub array is shorter than 2",  async (done) => {
+        const recipe: any = {
+            instruction: "PATTERN",
+            retrieveType: "bool",
+            parameters: {
+                pattern: "yolo"
+            },
+            sub: []
+        };  
+        const txt = "some text that does not match";
+        const parser = new Parser({}, {agency: OID, hotel: OID});
+        async function check(){
+            try {
+                await parser.intBoolean(recipe, txt);
+            } catch (e){
+                throw Error("test");
+            }
+        }
+        await expect(check()).rejects.toThrow(Error);
+        done();
+        
+    });
+
+    it("throws error if sub array is longer than 2", async (done) => {
+        const recipe: any = {
+            instruction: "PATTERN",
+            retrieveType: "bool",
+            parameters: {
+                pattern: "yolo"
+            },
+            sub: [
+                {
+                    instruction: "PATTERN",
+                    retrieveType: "bool",
+                    parameters: {
+                        pattern: "yolo"
+                    }
+                },
+                {
+                    instruction: "PATTERN",
+                    retrieveType: "bool",
+                    parameters: {
+                        pattern: "yolo"
+                    }
+                },
+                {
+                    instruction: "PATTERN",
+                    retrieveType: "bool",
+                    parameters: {
+                        pattern: "yolo"
+                    }
+                },
+            ]
+        };  
+        const txt = "some text that does not match";
+        const parser = new Parser({}, {agency: OID, hotel: OID});
+        async function check(){
+            try {
+                await parser.intBoolean(recipe, txt);
+            } catch (e){
+                throw Error("test");
+            }
+        }
+        await expect(check()).rejects.toThrow(Error);
+        done();
+        
+    });
+
+    it("should do sub[1] if true", async (done) => {
+        const recipe: any = {
+            instruction: "PATTERN",
+            retrieveType: "bool",
+            parameters: {
+                pattern: "some"
+            },
+            sub: [
+                {
+                    instruction: "PATTERN",
+                    retrieveType: "bool",
+                    parameters: {
+                        pattern: "text"
+                    }
+                },
+                {
+                    instruction: "PATTERN",
+                    retrieveType: "bool",
+                    parameters: {
+                        pattern: "that"
+                    }
+                }
+            ]
+        };  
+        const txt = "some text that does not match";
+        const parser = new Parser({}, {agency: OID, hotel: OID});
+        const extract = await parser.intBoolean(recipe, txt);
+        expect(extract).toEqual("text");
+        done();
+    });
+    const txt = "some text that does not match";
+
+    it("should do sub[0] if false", async (done) => {
+        const recipe: any = {
+            instruction: "PATTERN",
+            retrieveType: "bool",
+            parameters: {
+                pattern: "scoopidy shoop"
+            },
+            sub: [
+                {
+                    instruction: "PATTERN",
+                    retrieveType: "bool",
+                    parameters: {
+                        pattern: "text"
+                    }
+                },
+                {
+                    instruction: "PATTERN",
+                    retrieveType: "bool",
+                    parameters: {
+                        pattern: "that"
+                    }
+                }
+            ]
+        };  
+        const txt = "some text that does not match";
+        const parser = new Parser({}, {agency: OID, hotel: OID});
+        const extract = await parser.intBoolean(recipe, txt);
+        expect(extract).toEqual("that");
+        done();
+    });
+});

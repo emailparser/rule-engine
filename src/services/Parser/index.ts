@@ -69,9 +69,9 @@ export default class Parser{
             case "string":
                 method = () => this.intString(recipe, text);
                 break;
-            // case Boolean:
-            //     method = () => this.intBoolean(recipe, text);
-            //     break;
+            case "bool":
+                method = () => this.intBoolean(recipe, text);
+                break;
             case "array":
                 method = () => this.intArray(recipe, text);
                 break;
@@ -95,6 +95,19 @@ export default class Parser{
             "SPLIT_BY": "splitBy"
         };
         return methods[key];
+    }
+
+    public async intBoolean(recipe: Recipe, text: string): Promise<any>{
+        const {parameters, sub, instruction} = recipe;
+        const method: string = this.getGrabberMethod(instruction);
+        // @ts-ignore
+        const matches = await this[method](text, parameters);
+        let tmp = matches ? true : false;
+        if(sub){
+            
+        }
+        if(matches) return true;
+        else return false;
     }
 
     private async intDate(recipe: Recipe, text: string): Promise<any>{
