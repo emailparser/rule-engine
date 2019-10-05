@@ -31,6 +31,4 @@ app.use("/instructions/", routes.instructions);
 app.use("/retrieve_types/", routes.retrieveTypes);
 app.use("/validate/", routes.validateJson);
 
-
-
 export default app;

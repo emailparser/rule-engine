@@ -130,7 +130,7 @@ export default class ConfigValidator{
 
         // validates rrequired keys
         for(const key of requiredKeys){
-            if(!block[key]) throw Error(`${key} must exist on block`);
+            if(!block[key]) throw Error(`${JSON.stringify(block)} must exist on block`);
         }
     
         // checks if instruction is valid
@@ -163,16 +163,19 @@ export default class ConfigValidator{
                 case "bool":
                     if(!ConfigValidator.isArray(config.sub))
                         throw Error("Sub must be an array lengh 2 if retrieveType is boolean");
-                    ConfigValidator.validateBlock(config.sub[0]);
-                    ConfigValidator.validateBlock(config.sub[1]);
+                    ConfigValidator.validateConfig(config.sub[0]);
+                    ConfigValidator.validateConfig(config.sub[1]);
+                    break;
                 case "object":
                     if(!ConfigValidator.isObject(config.sub))
                         throw Error("Sub must be an object if retrieveType is object");
                     for(var key in config.sub){
-                        ConfigValidator.validateBlock(config.sub[key]);
+                        console.log(key);
+                        ConfigValidator.validateConfig(config.sub[key]);
                     }
+                    break;
                 default:
-                    ConfigValidator.validateBlock(config.sub);
+                    ConfigValidator.validateConfig(config.sub);
             }
         }
     }
