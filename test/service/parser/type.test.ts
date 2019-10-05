@@ -12,7 +12,7 @@ describe("String", () => {
             }
         };  
         const txt = "kalli he yolo what he is going yolo on he";
-        const parser = new Parser({}, {agency: OID, hotel: OID});
+        const parser = new Parser();
         const extract = await parser.intString(recipe, txt);
         expect(extract).toEqual("what");
         done();
@@ -28,7 +28,7 @@ describe("String", () => {
             }
         };  
         const txt = "kalli he yolo what he is going yolo on he";
-        const parser = new Parser({}, {agency: OID, hotel: OID});
+        const parser = new Parser();
         const extract = await parser.intString(recipe, txt);
         expect(extract).toEqual("on");
         done();
@@ -51,7 +51,7 @@ describe("String", () => {
             }
         };  
         const txt = "kalli he yolo what is bla bla going he is going yolo on he";
-        const parser = new Parser({}, {agency: OID, hotel: OID});
+        const parser = new Parser();
         const extract = await parser.intString(recipe, txt);
         expect(extract).toEqual("is bla bla");
         done();
@@ -69,7 +69,7 @@ describe("Array", () => {
             }
         };  
         const txt = "stefan double room\r gunnar single room\r jon stefan ocean view";
-        const parser = new Parser({}, {agency: OID, hotel: OID});
+        const parser = new Parser();
         const extract = await parser.intArray(recipe, txt);
         expect(extract).toEqual(["stefan double room", "gunnar single room", "jon stefan ocean view"]);
         done();
@@ -90,7 +90,7 @@ describe("Array", () => {
             }
         };  
         const txt = "stefan double room\r gunnar single room\r jon stefan ocean room view";
-        const parser = new Parser({}, {agency: OID, hotel: OID});
+        const parser = new Parser();
         const extract = await parser.intArray(recipe, txt);
         expect(extract).toEqual(["stefan double", "gunnar single", "jon stefan ocean"]);
         done();
@@ -108,7 +108,7 @@ describe("Array", () => {
             }
         };  
         const txt = "stefan double room\r gunnar single room\r jon stefan ocean view";
-        const parser = new Parser({}, {agency: OID, hotel: OID});
+        const parser = new Parser();
         const extract = await parser.intArray(recipe, txt);
         expect(extract).toEqual(["stefan double room", "gunnar single room", "jon stefan ocean view"]);
         done();
@@ -136,7 +136,7 @@ describe("Array", () => {
             }
         };  
         const txt = "guest: Stefán jón Jónsson room-type: double deluxe arrival";
-        const parser = new Parser({}, {agency: OID, hotel: OID});
+        const parser = new Parser();
         const extract = await parser.intObject(recipe, txt);
         expect(extract).toEqual({
             guest: "Stefán jón Jónsson",
@@ -183,7 +183,7 @@ describe("Recursive string -> string -> array -> object", () => {
     };  
     it("should parse data correrctly", async (next) => {
         const txt = " some begiinning guest: Stefán jón Jónsson room-type: double deluxe \r guest: Kalr Sveinn Ríkharðsson room-type: ocean view \r guest: Jón haraldur stefánsson room-type: double deluxe \r end";
-        const parser = new Parser({}, {agency: OID, hotel: OID});
+        const parser = new Parser();
         const extract = await parser.intString(recipe, txt);
         expect(extract).toEqual([{"guest": "Stefán jón Jónsson", "roomType": "double deluxe"}, {"guest": "Kalr Sveinn Ríkharðsson", "roomType": "ocean view"}, {"guest": "Jón haraldur stefánsson", "roomType": "double deluxe"}]);
         next();
@@ -200,7 +200,7 @@ describe("Boolean retrieveType", () => {
             }
         };  
         const txt = "kalli he yolo what he is going yolo on he";
-        const parser = new Parser({}, {agency: OID, hotel: OID});
+        const parser = new Parser();
         const extract = await parser.intBoolean(recipe, txt);
         expect(extract).toEqual(true);
         done();
@@ -215,7 +215,7 @@ describe("Boolean retrieveType", () => {
             }
         };  
         const txt = "some text that does not match";
-        const parser = new Parser({}, {agency: OID, hotel: OID});
+        const parser = new Parser();
         const extract = await parser.intBoolean(recipe, txt);
         expect(extract).toEqual(false);
         done();
@@ -231,7 +231,7 @@ describe("Boolean retrieveType", () => {
             sub: {}
         };  
         const txt = "some text that does not match";
-        const parser = new Parser({}, {agency: OID, hotel: OID});
+        const parser = new Parser();
         async function check(){
             try {
                 await parser.intBoolean(recipe, txt);
@@ -253,7 +253,7 @@ describe("Boolean retrieveType", () => {
             sub: []
         };  
         const txt = "some text that does not match";
-        const parser = new Parser({}, {agency: OID, hotel: OID});
+        const parser = new Parser();
         async function check(){
             try {
                 await parser.intBoolean(recipe, txt);
@@ -298,7 +298,7 @@ describe("Boolean retrieveType", () => {
             ]
         };  
         const txt = "some text that does not match";
-        const parser = new Parser({}, {agency: OID, hotel: OID});
+        const parser = new Parser();
         async function check(){
             try {
                 await parser.intBoolean(recipe, txt);
@@ -321,14 +321,14 @@ describe("Boolean retrieveType", () => {
             sub: [
                 {
                     instruction: "PATTERN",
-                    retrieveType: "bool",
+                    retrieveType: "string",
                     parameters: {
                         pattern: "text"
                     }
                 },
                 {
                     instruction: "PATTERN",
-                    retrieveType: "bool",
+                    retrieveType: "string",
                     parameters: {
                         pattern: "that"
                     }
@@ -336,9 +336,9 @@ describe("Boolean retrieveType", () => {
             ]
         };  
         const txt = "some text that does not match";
-        const parser = new Parser({}, {agency: OID, hotel: OID});
+        const parser = new Parser();
         const extract = await parser.intBoolean(recipe, txt);
-        expect(extract).toEqual("text");
+        expect(extract).toEqual("that");
         done();
     });
     const txt = "some text that does not match";
@@ -353,14 +353,14 @@ describe("Boolean retrieveType", () => {
             sub: [
                 {
                     instruction: "PATTERN",
-                    retrieveType: "bool",
+                    retrieveType: "string",
                     parameters: {
                         pattern: "text"
                     }
                 },
                 {
                     instruction: "PATTERN",
-                    retrieveType: "bool",
+                    retrieveType: "string",
                     parameters: {
                         pattern: "that"
                     }
@@ -368,9 +368,9 @@ describe("Boolean retrieveType", () => {
             ]
         };  
         const txt = "some text that does not match";
-        const parser = new Parser({}, {agency: OID, hotel: OID});
+        const parser = new Parser();
         const extract = await parser.intBoolean(recipe, txt);
-        expect(extract).toEqual("that");
+        expect(extract).toEqual("text");
         done();
     });
 });

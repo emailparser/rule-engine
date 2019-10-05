@@ -15,46 +15,12 @@ export default class Parser{
     private config: Config;
     private reservation: Reservation;
 
-    public constructor(data: EmailData, config: Config){
-        this.config = config;
-        this.data = data;
-        this.reservation = {
-            hotel: data.hotel,
-            agency: data.agency
-        };
+    public constructor(){
+        
     }
 
-    // public static async parse(emailData: EmailData){
-    //     const config = await ParseConfig.find({
-    //         agency: emailData.agency
-    //     });
-    //     const parser = new Parser(emailData, config);
-    //     return await parser.parse();
-    // }
-
-    public async parse(): Promise<Reservation> {
-        let key: string;
-        for(key in this.config){
-            const value = await this.interpret(key);
-            if(!value){
-                throw Error(`Could not parse ${key}`);
-            }
-            this.reservation[key] = value;
-
-        }
-        return this.reservation;
-    }
-
-    private async interpret(key: string): Promise<any>{
-        const dataKeys = ["body", "pdftext", "subject"];
-        const recipe: Recipe = this.data[key];
-        let value: any;
-        while(dataKeys.length > 0 && !value){
-            const key = dataKeys.shift();
-            const data = this.data[key];
-            if(!data) continue;
-            value = this.intRouter(recipe, data);
-        }
+    public async read(recipe: Recipe, text: string): Promise<any>{
+        return await this.intRouter(recipe, text);
     }
 
 
@@ -91,7 +57,6 @@ export default class Parser{
             "STRING_BETWEEN": "stringBetween",
             "STRING_AFTER": "stringAfter",
             "STRING_BEFORE": "stringBefore",
-            "EXACT_PHRASE": "exactPhrase",
             "SPLIT_BY": "splitBy"
         };
         return methods[key];
@@ -104,10 +69,11 @@ export default class Parser{
         const matches = await this[method](text, parameters);
         let tmp = matches ? true : false;
         if(sub){
-            
+            if(!Array.isArray(sub)) throw Error("Sub for boolean must be arra with true [bx1] or false [bx0]");
+            if(sub.length !== 2) throw Error("Sub for boolean must be arra with true [bx1] or false [bx0]");
+            tmp = await this.intSub(sub[tmp ? 1 : 0], text);
         }
-        if(matches) return true;
-        else return false;
+        return tmp;
     }
 
     private async intDate(recipe: Recipe, text: string): Promise<any>{

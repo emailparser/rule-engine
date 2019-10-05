@@ -3,6 +3,8 @@ import compression from "compression";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import { MONGODB_URI } from "./util/secrets";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const routes = require("./routes");
 
 
 // Create Express server
@@ -23,5 +25,7 @@ app.set("port", process.env.PORT || 3000);
 app.use(compression());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use("/parse/", routes.parser);
 
 export default app;
