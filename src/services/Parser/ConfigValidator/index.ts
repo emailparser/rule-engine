@@ -170,7 +170,6 @@ export default class ConfigValidator{
                     if(!ConfigValidator.isObject(config.sub))
                         throw Error("Sub must be an object if retrieveType is object");
                     for(var key in config.sub){
-                        console.log(key);
                         ConfigValidator.validateConfig(config.sub[key]);
                     }
                     break;
