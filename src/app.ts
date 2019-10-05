@@ -27,5 +27,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/parse/", routes.parser);
+app.use("/instructions/", routes.instructions);
+app.use("/retrieve_types/", routes.retrieveTypes);
+app.use("/validate/", routes.validateJson);
+
+
 
 export default app;
