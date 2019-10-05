@@ -1,13 +1,13 @@
-
-/* eslint-disable @typescript-eslint/no-var-requires */
 import {Router, Request, Response} from "express";
-import {ConfigValidator} from "../../../services";
+import {country} from "../../../models";
 const router = Router();
 
-router.get("/", async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response) => {
 
     try {
-        res.send(ConfigValidator.instructions());
+        const item = new country(req.body);
+        await item.save();
+        res.send(item);
     } catch(e) {
         res.status(400).send({
             message: "Could not get instructions",
@@ -16,4 +16,4 @@ router.get("/", async (req: Request, res: Response) => {
     }
 });
 
-export = router;
+export default router;
