@@ -8,5 +8,4 @@ const schema = new Schema({
     price: Number
 }, {timestamps: true});
 
-
 export default model("client", schema, "client");
