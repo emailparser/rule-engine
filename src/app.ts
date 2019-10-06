@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import { MONGODB_URI } from "./util/secrets";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-import * as routes from "./routes";
+//import * as routes from "./routes";
 
 
 // Create Express server
@@ -26,6 +26,6 @@ app.use(compression());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use("/country/", routes.country);
+//app.use("/country/", routes.country);
 
 export default app;
