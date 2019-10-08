@@ -11,7 +11,7 @@ export default class Transformer{
         this.groupped = {};
     }
 
-    public async getTransfrmations(): Promise<void>{
+    public async getTransformations(): Promise<void>{
         const allKeywords = await transformationKeywords
             .find({client: this.client})
             .populate({

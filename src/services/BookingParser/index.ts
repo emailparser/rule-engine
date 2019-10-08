@@ -3,7 +3,8 @@ import {IFormat} from "../../models/format";
 import Axios from "axios";
 import {
     ShouldNotparseError,
-    ProblemDuringParsingError
+    ProblemDuringParsingError,
+    Transformer
 } from "../";
 
 import {
@@ -22,10 +23,11 @@ export default class BookingParser{
         if(emailData.status !== 0) throw new ShouldNotparseError("Email doesn't have unparsed status");
 
         const parsed = await parsedData.findOne({email: emailData._id});
-        if(parsed) throw new ShouldNotparseError("Email doesn't have unparsed status");
+        if(parsed) throw new ShouldNotparseError("Email already has parsed data assigned to its");
 
         const foundEmail = await clientEmail.findOne({email: emailData.to});
         if(!foundEmail) throw new ShouldNotparseError("Email's to is not recognized");
+        const client = foundEmail.client;
 
         const connections = await formatConnection
             .find({client: foundEmail.client})
@@ -38,7 +40,12 @@ export default class BookingParser{
         if(!format) throw new ShouldNotparseError("Format not found");
         const [externalRef, data] = await BookingParser.retrieveDataFromText(emailData, format);
 
-        // add transfoormationos here via method call
+        // calls transformation class to transform from matched strings
+        // to client specified transformations e.g. rooms Ids, tour Ids
+        // @ts-ignore
+        const transformer = new Transformer(client);
+        await transformer.getTransformations();
+        transformer.transform(data);
 
         const parsedDataInstance = new parsedData({
             email: emailData._id,

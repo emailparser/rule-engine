@@ -62,7 +62,7 @@ app.post("/parse/email_data/:id", async (req: Request, res: Response) => {
 app.post("/transformer/:id", async (req: Request, res: Response) => {
     try {
         const transformer = new Transformer(req.params.id);
-        await transformer.getTransfrmations();
+        await transformer.getTransformations();
         transformer.transform(req.body);
         res.send(req.body);
     } catch(e){
