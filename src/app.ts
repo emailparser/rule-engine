@@ -3,7 +3,8 @@ import compression from "compression";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import { MONGODB_URI } from "./util/secrets";
-import {BookingParser} from "./services";
+import {BookingParser, Transformer} from "./services";
+import {keys} from "./models";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 //import * as routes from "./routes";
 
@@ -35,7 +36,47 @@ app.post("/parse/email_data/:id", async (req: Request, res: Response) => {
     try {
         const data = await BookingParser.parse(req.params.id);
         console.log(data);
-        res.send("OK");
+        res.send(req.body.data);
+    } catch(e){
+        console.log(e);
+        res.status(419).send(e);
+    }
+});
+
+// app.post("/parse/transform", (req: Request, res: Response) => {
+//     try {
+//         BookingParser.transform(req.body.data, (key: string, successHandler: any) => {
+//             if(req.body.trigger === key){
+//                 successHandler();
+//             }
+//         }, (value: any, setValue: any) => {
+//             setValue(req.body.replacement);
+//         });
+//         res.send(req.body.data);
+//     } catch(e){
+//         console.log(e);
+//         res.status(419).send(e);
+//     }
+// });
+
+app.post("/transformer/:id", async (req: Request, res: Response) => {
+    try {
+        const transformer = new Transformer(req.params.id);
+        await transformer.getTransfrmations();
+        transformer.transform(req.body);
+        res.send(req.body);
+    } catch(e){
+        console.log(e);
+        res.status(419).send(e);
+    }
+});
+
+app.post("/key", async (req: Request, res: Response) => {
+    try {
+        const key = new keys(req.body);
+        key.type = "5d98b86cd6678100291c9a37";
+        await key.save();
+        res.send(key);
     } catch(e){
         console.log(e);
         res.status(419).send(e);
@@ -43,5 +84,5 @@ app.post("/parse/email_data/:id", async (req: Request, res: Response) => {
 });
 
 //app.use("/country/", routes.country);
-
+	
 export default app;

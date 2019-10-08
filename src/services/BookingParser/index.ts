@@ -17,14 +17,8 @@ export default class BookingParser{
 
     public static async parse(emailId: string){
 
-        let format: IFormat;
-        let externalRef: string;
-        let response: any;
-
         BookingParser.validateId(emailId);
-
         const emailData = await email.findById(emailId);
-
         if(emailData.status !== 0) throw new ShouldNotparseError("Email doesn't have unparsed status");
 
         const parsed = await parsedData.findOne({email: emailData._id});
@@ -40,45 +34,26 @@ export default class BookingParser{
                 populate: { path: "format" }
             });
 
-        
-        connections.forEach((conn) => {
-            for(const email of conn.emails){
-                if(email == emailData.from){
-                    // @ts-ignore
-                    format = conn.format;
-                    return;
-                };
-            }
-        });
-
+        const format = BookingParser.getFormat(connections, emailData);
         if(!format) throw new ShouldNotparseError("Format not found");
+        const [externalRef, data] = await BookingParser.retrieveDataFromText(emailData, format);
 
-        const textualData = emailData.body + " \r " + emailData.pdfstring + " \r " + emailData.subject;
-        
-        try {
-            response = await Axios.post("http://dataparser.emailparser.online/parse/", {
-                input: textualData,
-                config: format.config
-            });
-            
-            externalRef = textualData
-                .match(new RegExp(format.externalRefPattern, "g"))
-                .shift();
-        } catch(e) {
-            if(!format) throw new ProblemDuringParsingError("Parsing failed");
-        }
+        // add transfoormationos here via method call
 
         const parsedDataInstance = new parsedData({
             email: emailData._id,
-            data: JSON.stringify(response.data),
+            data: JSON.stringify(data),
             externalRef: externalRef,
             format: format._id,
             client: foundEmail.client
         });
-
-
         
-        await parsedDataInstance.save();
+        try {
+            await parsedDataInstance.save();
+        } catch(e) {
+            throw Error("There was an error saving the parsed Data");
+        }
+        
 
         return parsedDataInstance.toObject();
     }
@@ -89,5 +64,43 @@ export default class BookingParser{
         } catch(e) {
             throw new ProblemDuringParsingError("Invalid Id");
         }
+    }
+
+    public static getFormat(connections: any, emailData: any): IFormat{
+        let format: IFormat;
+        connections.forEach((conn: any) => {
+            for(const email of conn.emails){
+                if(email == emailData.from){
+                    // @ts-ignore
+                    format = conn.format;
+                    return;
+                };
+            }
+        });
+        return format;
+    }
+
+    public static async retrieveDataFromText(emailData: any, format: IFormat){
+        let response, externalRef;
+        const textualData = "body: " + emailData.body + "pdfstring: " + emailData.pdfstring + "subject: " + emailData.subject;
+
+        try {
+            response = await Axios.post("http://dataparser.emailparser.online/parse/", {
+                input: textualData,
+                config: format.config
+            });
+        } catch(e) {
+            if(!format) throw new ProblemDuringParsingError("Parsing failed during data retrieval");
+        }
+
+        try {
+            externalRef = textualData
+                .match(new RegExp(format.externalRefPattern, "g"))
+                .shift();
+        } catch(e) {
+            if(!format) throw new ProblemDuringParsingError("Parsing failed during parsing of externalRef");
+        }
+
+        return [externalRef, response.data];
     }
 }
