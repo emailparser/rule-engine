@@ -1,4 +1,5 @@
-import {model, Schema} from "mongoose";
+/* eslint-disable @typescript-eslint/interface-name-prefix */
+import {model, Schema, Document} from "mongoose";
 
 const schema = new Schema({
     title: String,
@@ -8,4 +9,12 @@ const schema = new Schema({
     price: Number
 }, {timestamps: true});
 
-export default model("client", schema, "client");
+export interface IClient extends Document{
+    title: string;
+    company: any;
+    type: any;
+    postEndpoint: string;
+    price: number;
+}
+
+export default model<IClient>("client", schema, "client");

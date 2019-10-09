@@ -1,4 +1,5 @@
-import {Schema, model} from "mongoose";
+/* eslint-disable @typescript-eslint/interface-name-prefix */
+import {Schema, model, Document} from "mongoose";
 
 const schema = new Schema({
     status: { type: Number, default: 0},
@@ -9,4 +10,13 @@ const schema = new Schema({
     client: { type: Schema.Types.ObjectId, ref: "client"}
 }, {timestamps: true});
 
-export default model("parseddata", schema, "parseddata");
+export interface IParsedData extends Document{
+    status: number;
+    email: any;
+    format: any;
+    client: any;
+    data: any;
+    externalRef: string;
+}
+
+export default model<IParsedData>("parseddata", schema, "parseddata");

@@ -6,5 +6,6 @@ export {default as transformation} from "./transformation";
 export {default as parsedData} from "./parsedData";
 export {default as keys} from "./keys";
 export {default as clientEmail} from "./clientEmail";
+export {default as transaction} from "./transaction";
 // @ts-ignore
 export {default as transformationKeywords} from "./transformationKeywords";
