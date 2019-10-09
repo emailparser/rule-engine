@@ -3,7 +3,7 @@ import compression from "compression";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import { MONGODB_URI } from "./util/secrets";
-import {TransactionDispatcher} from "./services";
+import {} from "./services";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 //import * as routes from "./routes";
 
@@ -30,16 +30,5 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.get("/", (req: Request, res: Response) => {
     res.send(";)");
 });
-
-app.post("/transaction/parsed_data/:pid", async (req: Request, res: Response) => {
-    try {
-        const transaction = await TransactionDispatcher.transact(req.params.pid);
-        res.send(transaction);
-    } catch(e) {
-        console.log(e);
-        res.status(400).send(e);
-    }
-});
-
 	
 export default app;
