@@ -29,50 +29,40 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/", (req: Request, res: Response) => {
-    res.send("<h1>Caren service</h1>");
+    res.send("<h1>Bokun.is service</h1>");
 });
     
-app.post("/new_booking/:tid", async  (req: Request, res: Response) => {
-    const {tid} = req.params;
+app.get("/test", async  (req: Request, res: Response) => {
+
+    const apiConfig = {
+        accessKey: "359d0d6169484192b7d50c35053cbfc0",
+        secretKey: "6347136c95c14a899449d6aa9beb691d"
+    };
+    const bokun = new Services.Bokun(apiConfig);
     try {
-        const transaction = await Models.transaction
-            .findById(tid)
-            .populate({
-                path: "parseddata",
-                model: "parseddata"
-            });
-        if(!transaction) throw Error("transaction not found");
-        if(transaction.internalRef) throw Error("transaction has already been booked");
-
-        const apiConfig = await Models.clientapiconfig.findOne({client: transaction.client});
-        const caren = new Services.Caren(apiConfig.apiConnectionInfo);
-        const {data} = JSON.parse(transaction.parseddata);
-
-        data.dateTo = new Date(data.dateTo);
-        data.dateFrom = new Date(data.dateFrom);
-        const ref = await caren.book(data);
-        res.send({ref});
-
-    } catch(e) {
-        res.status(400).send(e);
-    }
-});
-
-app.get("/transformations/:key/:cid", async (req: Request, res: Response) => {
-    const {key, cid} = req.params;
-
-    try {
-        const apiConfig = await Models.clientapiconfig.findOne({client: cid});
-        if(!apiConfig) throw Error("apiConfig not found");
-        const caren = new Services.Caren(apiConfig.apiConnectionInfo);
-        caren.setClientId(cid);
-        const data = await caren.getTransformationsFor(key);
+        const data = await bokun.test();
         res.send(data);
     } catch(e) {
-        res.status(400).send({
-            message: e.message
-        });
+        console.log(e);
+        res.send(e);
     }
 });
+
+// app.get("/transformations/:key/:cid", async (req: Request, res: Response) => {
+//     const {key, cid} = req.params;
+
+//     try {
+//         const apiConfig = await Models.clientapiconfig.findOne({client: cid});
+//         if(!apiConfig) throw Error("apiConfig not found");
+//         const caren = new Services.Caren(apiConfig.apiConnectionInfo);
+//         caren.setClientId(cid);
+//         const data = await caren.getTransformationsFor(key);
+//         res.send(data);
+//     } catch(e) {
+//         res.status(400).send({
+//             message: e.message
+//         });
+//     }
+// });
 
 export default app;

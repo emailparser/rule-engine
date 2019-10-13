@@ -1,10 +1,12 @@
 export interface ApiConfig{
-    Apikey: string;
-    Username: string;
-    Password: string;
-    rentalId: number;
+    accessKey: string;
+    secretKey: string;
 }
 
+export interface RequestConfig{
+    route: string;
+    headers: any;
+}
 export interface Bookable {
     session: string;
     rentalId: number;
