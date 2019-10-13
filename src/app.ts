@@ -46,18 +46,14 @@ app.post("/new_booking/:tid", async  (req: Request, res: Response) => {
 
         const apiConfig = await Models.clientapiconfig.findOne({client: transaction.client});
         const caren = new Services.Caren(apiConfig.apiConnectionInfo);
-        const datas: any[] = JSON.parse(transaction.parseddata.data);
-        const refs = [];
-        for(const data of datas){
-            data.dateTo = new Date(data.dateTo);
-            data.dateFrom = new Date(data.dateFrom);
-            const ref = await caren.book(data);
-            refs.push(ref);
-        }
-        res.send({refs});
+        const {data} = JSON.parse(transaction.parseddata);
+
+        data.dateTo = new Date(data.dateTo);
+        data.dateFrom = new Date(data.dateFrom);
+        const ref = await caren.book(data);
+        res.send({ref});
 
     } catch(e) {
-        console.log(e);
         res.status(400).send(e);
     }
 });
@@ -78,4 +74,5 @@ app.get("/transformations/:key/:cid", async (req: Request, res: Response) => {
         });
     }
 });
+
 export default app;
