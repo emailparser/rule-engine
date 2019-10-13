@@ -12,7 +12,7 @@ const schema = new Schema({
 export interface ITransformation extends Document{
     client: string;
     title: string;
-    key: IKeys;
+    key: any;
     externalKey: string;
 }
 

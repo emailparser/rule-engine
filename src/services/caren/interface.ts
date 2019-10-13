@@ -8,6 +8,7 @@ export interface ApiConfig{
 export interface Bookable {
     session: string;
     rentalId: number;
+    language: string;
     dateFrom: string;
     dateTo: string;
     classId: any;
@@ -28,8 +29,7 @@ export interface ParsedData {
     dateTo: Date;
     vehicle: string;
     bookingRef: string;
-    pickupLocation: string;
-    dropoffLocation: string;
+    locations: any[];
     extras: ParsedExtras[];
     insurances: string[];
     comment?: string;
@@ -49,3 +49,4 @@ export interface CustomerInfo{
     lastName: string;
     email: string;
 }
+

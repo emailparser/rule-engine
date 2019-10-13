@@ -13,7 +13,7 @@ const schema = new Schema({
 export interface ITransaction extends Document{
     client: any;
     format: any;
-    parsedData: any;
+    parseddata: any;
     externalRef: string;
     internalRef: string;
 }
