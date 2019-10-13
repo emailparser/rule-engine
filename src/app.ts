@@ -45,7 +45,7 @@ app.post("/new_booking/:tid", async  (req: Request, res: Response) => {
         if(transaction.internalRef) throw Error("transaction has already been booked");
 
         const apiConfig = await Models.clientapiconfig.findOne({client: transaction.client});
-        const caren = new Services.Caren(apiConfig.toObject());
+        const caren = new Services.Caren(apiConfig.apiConnectionInfo);
         const datas: any[] = JSON.parse(transaction.parseddata.data);
         const refs = [];
         for(const data of datas){
@@ -68,7 +68,7 @@ app.get("/transformations/:key/:cid", async (req: Request, res: Response) => {
     try {
         const apiConfig = await Models.clientapiconfig.findOne({client: cid});
         if(!apiConfig) throw Error("apiConfig not found");
-        const caren = new Services.Caren(apiConfig.toObject());
+        const caren = new Services.Caren(apiConfig.apiConnectionInfo);
         caren.setClientId(cid);
         const data = await caren.getTransformationsFor(key);
         res.send(data);

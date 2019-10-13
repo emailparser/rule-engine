@@ -113,18 +113,19 @@ export default class Caren{
         };
     }
 
-    private async getClasses(): Promise<ITransformation[]>{
-        // caren needs dates for this lookup
-        // we set month as current + 8 months to ensure availability
-
+    private getSomeDates(): Date[] {
         const d1 = new Date();
         d1.setMonth(d1.getMonth() + 8);
         d1.setDate(1);
         const d2 = new Date(d1.getTime());
         d2.setDate(4);
-
+        return [d1, d2];
+    }
+    private async getClasses(): Promise<ITransformation[]>{
+        // caren needs dates for this lookup
+        // we set month as current + 8 months to ensure availability
+        const [d1, d2] = this.getSomeDates();
         const params = this.baseParams();
-        
         params.dateFrom = d1;
         params.dateTo = d2;
    
