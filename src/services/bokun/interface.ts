@@ -1,6 +1,7 @@
 export interface ApiConfig{
     accessKey: string;
     secretKey: string;
+    vendorId: number;
 }
 
 export interface RequestConfig{
@@ -29,16 +30,17 @@ export interface Bookable {
 export interface ParsedData {
     dateFrom: Date;
     dateTo: Date;
-    vehicle: string;
+    activity: string;
     bookingRef: string;
-    locations: any[];
-    extras: ParsedExtras[];
-    insurances: string[];
+    pickupLocation: string;
     comment?: string;
-    pickupInfo?: string;
-    reseller: string;
-    affiliate: string;
     customer: CustomerInfo;
+    pax: PaxType[];
+}
+
+export interface PaxType{
+    paxType: string;
+    paxCount: string;
 }
 
 export interface ParsedExtras{

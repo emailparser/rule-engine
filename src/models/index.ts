@@ -8,5 +8,6 @@ export {default as keys} from "./keys";
 export {default as clientEmail} from "./clientEmail";
 export {default as transaction} from "./transaction";
 export {default as clientapiconfig} from "./clientapiconfig";
+export {default as parsemessage} from "./parsemessage";
 // @ts-ignore
 export {default as transformationKeywords} from "./transformationKeywords";
