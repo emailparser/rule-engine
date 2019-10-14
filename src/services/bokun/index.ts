@@ -18,7 +18,7 @@ export default class Caren{
     public constructor(apiConfig: any){
         this.apiConfig = apiConfig;
     }
-    
+
     public setClientId(id: string){
         this.clientId  = id;
     }
@@ -67,14 +67,14 @@ export default class Caren{
     public async test(): Promise<any>{
         const {route, headers} = this.getReuestConfig("/activity.json/search?lang=EN&currency=ISK&vendor=658", requestMethods.POST);
         const {data} = await Axios.post(route, {vendors: [658]}, {headers});
-        return data.items.map((a: any) => {
-            return {
-                title: a.title,
-                externalKey: a.id,
-                client: "NA",
-                key: "NA"
-            };
-        });
+        return data;//.items; //.map((a: any) => {
+        //     return {
+        //         title: a.title,
+        //         externalKey: a.id,
+        //         client: "NA",
+        //         key: "NA"
+        //     };
+        // });
         
     }
 }
@@ -84,8 +84,9 @@ POST
 /booking.json/guest/{sessionId}/reserve
 
 The POST body should contain the answers to the questions, along with optional information about discount and payments. It will look similar to the following, which reserves an activity booking:
+*/
 
-{
+const x = {
     "answers": {
         "answers": [{
             "type": "first-name",
@@ -100,7 +101,7 @@ The POST body should contain the answers to the questions, along with optional i
             "type": "phone-number",
             "answer": "+354 1234567"
         }, {
-            "type": "nationality"
+            "type": "nationality",
             "answer": "UK"
         }, {
             "type": "address",
@@ -122,46 +123,58 @@ The POST body should contain the answers to the questions, along with optional i
             "question": "Yes, I want to subscribe to the email list",
             "answer": "true"
         }],
-        "accommodationsBookings": [],
-        "carRentalBookings": [],
-        "activityBookings": [{
-            "bookingId": 443,
-            "answerGroups": [{
-                "name": "participant-info",
-                "answers": [{
-                    "type": "name",
-                    "question": "Participant name",
-                    "answer": "John"
-                }]
-            }, {
-                "name": "other",
-                "answers": [{
-                    "type": "special-requests",
-                    "question": "Special requests",
-                    "answer": "None."
-                }]
-            }],
-            "extraBookings": [{
-                "bookingId": 194,
-                "answerGroups": [{
-                    "name": "extra-info",
-                    "answers": [{
-                        "type": "extra-question",
-                        "question": "Which size do you use?",
-                        "answer": "Large",
-                        "questionId": 27
-                    }]
-                }]
-            }],
-            "pricingCategoryBookings": [
-                {
-                    "bookingId": 200
-                }
-            ],
+        "activityBookings": [
+            {
+                "bookingId": 443,
+                "answerGroups": [
+                    {
+                        "name": "participant-info",
+                        "answers": [
+                            {
+                                "type": "name",
+                                "question": "Participant name",
+                                "answer": "John"
+                            }
+                        ]
+                    }, 
+                    {
+                        "name": "other",
+                        "answers": [
+                            {
+                                "type": "special-requests",
+                                "question": "Special requests",
+                                "answer": "None."
+                            }
+                        ]
+                    }
+                ],
+                "extraBookings": [
+                    {
+                        "bookingId": 194,
+                        "answerGroups": [
+                            {
+                                "name": "extra-info",
+                                "answers": [
+                                    {
+                                        "type": "extra-question",
+                                        "question": "Which size do you use?",
+                                        "answer": "Large",
+                                        "questionId": 27
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "pricingCategoryBookings": [
+                    {
+                        "bookingId": 200
+                    }
+                ],
 
-            "pickupPlaceDescription": "Hotel Reykjavik",
-            "pickupPlaceRoomNumber": "110"
-        }]
+                "pickupPlaceDescription": "Hotel Reykjavik",
+                "pickupPlaceRoomNumber": "110"
+            }
+        ]
     }
-}
-*/
+};
