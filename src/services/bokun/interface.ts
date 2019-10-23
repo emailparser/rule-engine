@@ -2,6 +2,8 @@ export interface ApiConfig{
     accessKey: string;
     secretKey: string;
     vendorId: number;
+    defaultCurrency: string;
+    defaultLang: string;
 }
 
 export interface RequestConfig{

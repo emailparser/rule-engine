@@ -6,7 +6,8 @@ const schema = new Schema({
     transaction: { type: Schema.Types.ObjectId, ref: "transaction"},
     seen: {type: Boolean, default: false},
     danger: {type: Boolean, default: false},
-    code: String
+    code: String,
+    atFault: Boolean
 }, {timestamps: true});
 
 export interface IParseMessage extends Document{
@@ -15,6 +16,7 @@ export interface IParseMessage extends Document{
     seen: boolean;
     danger: boolean;
     code: string;
+    atFault: boolean;
 }
 
 export default model<IParseMessage>("parsemessage", schema, "parsemessage");
