@@ -14,8 +14,9 @@ export interface ITransformation extends Document{
     title: string;
     key: any;
     externalKey: string;
+    system: any;
 }
 
 
 
-export default model("transformation", schema, "transformation");
+export default model<ITransformation>("transformation", schema, "transformation");

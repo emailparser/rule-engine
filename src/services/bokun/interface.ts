@@ -4,45 +4,43 @@ export interface ApiConfig{
     vendorId: number;
     defaultCurrency: string;
     defaultLang: string;
+    tourIds: string;
 }
 
 export interface RequestConfig{
     route: string;
     headers: any;
 }
-export interface Bookable {
-    session: string;
-    rentalId: number;
-    language: string;
-    dateFrom: string;
-    dateTo: string;
-    classId: any;
-    pickupLocationId: any;
-    dropoffLocationId: any;
-    extras: string[][];
-    insurances: string[][];
-    comments: string;
-    customer: CustomerInfo;
-    confirmReservation: boolean;
-    pickupLocationExtraInfo: string;
-    affiliate?: string;
+// export interface Bookable {
     
-}
+// }
 
 export interface ParsedData {
-    dateFrom: Date;
-    dateTo: Date;
+    dateFrom: DateFrom;
     activity: string;
     bookingRef: string;
-    pickupLocation: string;
+    pickupLocation: PickupLocation;
     comment?: string;
     customer: CustomerInfo;
     pax: PaxType[];
 }
 
+export interface PickupLocation{
+    needsPickup: boolean;
+    location: string;
+}
+
+export interface DateFrom{
+    startTime: Date;
+    flightTime: string;
+    flightNumber: string;
+}
+
 export interface PaxType{
     paxType: string;
     paxCount: string;
+    birthYear?: string;
+    age?: string;
 }
 
 export interface ParsedExtras{

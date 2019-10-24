@@ -1,9 +1,7 @@
 import {ApiConfig, ParsedData, RequestConfig, PaxType} from "./interface";
-import {ProblemDuringParsingError} from "..";
 import Axios from "axios";
 import {ITransformation} from "../../models/transformation";
 import * as Models from "../../models";
-import {isEmail} from "validator";
 import {requestMethods, dateGranularity} from "./enum";
 import crypto from "crypto";
 const apiEndPoint = "https://api.bokun.is";
@@ -12,12 +10,13 @@ const apiEndPoint = "https://api.bokun.is";
     ATH ORRIGOO BÝST VIÐ FirstName ekki firrstName
     skoða allarr breytur sem eru sendarr á origoo og skoða capital cases
 */
-export default class Caren{
+export default class Bokun{
     private apiConfig: ApiConfig;
     private data: ParsedData;
     private clientId: string;
     private transctionId: string;
     private parsemessages: any[];
+    private transformations: ITransformation[];
     public constructor(apiConfig: any){
         this.apiConfig = apiConfig;
         this.parsemessages = [];
@@ -93,19 +92,105 @@ export default class Caren{
         return data;
     }
 
-    public async getActivities(): Promise<any[]>{
-        const d1 = new Date();
-        const d2 = new Date();
-        d1.setMonth(12);
-        d2.setMonth(12);
+    public async postTransform(datas: ParsedData[]): Promise<void>{
+        for(const data of datas){
+            await this.postTransformPax(data);
+            await this.postPickupLocatinTransform(data);
+        }
+    }
 
-        const paramObj = this.getQueryString({
-            start: this.dateToString(d1, dateGranularity.day),
-            end: this.dateToString(d2, dateGranularity.day),
+    private async getTransformations(){
+        if(this.transformations) return this.transformations;
+        this.transformations = await Models.transformation
+            .find({client: this.clientId})
+            .populate({path: "key", model: "keys"});
+
+        return this.transformations;
+    }
+
+    public async postPickupLocatinTransform(data: ParsedData){
+        if(!data.pickupLocation) return;
+        if(data.pickupLocation.location) return;
+        const transformations = await this.getTransformations();
+
+        let transformation = transformations.find((a) => {
+            if(a.key.title !== "activity") return false;
+            return a.externalKey.toString() === data.activity.toString();
         });
-        const path = `/activity.json/search?${paramObj}`;
-        const {data} = await this.requestCaller(requestMethods.POST, path, {});
-        return data.items;
+
+
+        const {system} = transformation.toObject();
+        console.log("system", system);
+
+        if(!system) return;
+        if(data.pickupLocation.needsPickup) 
+            data.pickupLocation.location = system.backupLocation;
+        else
+            data.pickupLocation.location = system.defaultLocation;
+
+    }
+
+    public async postTransformPax(data: ParsedData){
+
+        let shouldContinue: boolean;
+
+        shouldContinue = data.pax.some((a: PaxType) => a.birthYear || a.age);
+        if(!shouldContinue) return;
+
+        const transformations = await this.getTransformations();
+
+        let transformation = transformations.find((a) => {
+            if(a.key.title !== "activity") return false;
+            return a.externalKey.toString() === data.activity.toString();
+        });
+        transformation = transformation.toObject();
+        if(!transformation) return;
+        data.pax = data.pax.map((a: PaxType) => {
+            if(a.paxType) return a;
+            if(!a.age && a.birthYear){
+                const d = new Date();
+                const cur = d.getFullYear();
+                a.age = String(cur - parseInt(a.birthYear));
+            } else if (!a.age){
+                return a;
+            }
+
+            // @ts-ignore
+            const age = parseInt(a.age);
+            if(!transformation.system) return a;
+            if(!transformation.system.paxTypes) return a;
+
+            for(const key in transformation.system.paxTypes){
+                const range = transformation.system.paxTypes[key].map((i: string) => parseInt(i));
+                if(range[0] <= age && range[1] >= age){
+                    return {
+                        ...a,
+                        paxType: key
+                    };
+                }
+            }
+        });
+
+        try {
+            const path = "http://bookingparser.emailparser.online/transform_data/" + this.clientId;
+            const res = await Axios.post(path, data.pax);
+            data.pax = res.data;
+        } catch(e) {
+
+        }
+    }
+
+    public async getActivities(): Promise<any[]>{
+        let {tourIds} = this.apiConfig;
+        tourIds = tourIds ? tourIds : "";
+        const tourArray = this.apiConfig.tourIds.split(" ");
+        const retArr = [];
+        for(const id of tourArray){
+            const path = "/activity.json/" + id;
+            const {data} = await this.requestCaller(requestMethods.GET, path);
+            retArr.push(data);
+        }
+        return retArr.filter((a: any) => a.actualVendor.id === a.vendor.id);
     }
 
     public _getQueryString(params: any){
@@ -146,13 +231,15 @@ export default class Caren{
             return {
                 title: a.title,
                 externalKey: a.id,
-                client: "NA",
+                client: this.clientId,
                 key: "NA"
             };
         });
     }
 
-    private async _getLocations(): Promise<any>{
+
+
+    private async _getLocations(): Promise<any[]>{
         const obj: any = {};
         const retArr = [];
         const activites = await this.getActivities();
@@ -160,13 +247,21 @@ export default class Caren{
             const path = `/activity.json/${a.id}/pickup-places`;
             const {data} = await this.requestCaller(requestMethods.GET, path, {});
             for(const d of data.pickupPlaces){
-                //@ts-ignore
-                if(!obj[d.id]) obj[d.id] = d;
+                obj[d.id] = d;
             }
-        
         }
-        for(const key in obj) retArr.push(obj[key]);
-        return retArr;
+
+        for(const key in obj){
+            retArr.push(obj[key]);
+        }
+        return retArr.map((a: any) => {
+            return {
+                title: a.title,
+                externalKey: a.id,
+                client: this.clientId,
+                key: "NA"
+            };
+        });
         
     }
     public async getTransformationsFor(key: string): Promise<ITransformation[]> {
@@ -324,3 +419,19 @@ export default class Caren{
         }
     }
 }
+
+// alba geusthooue id 10
+// alba guesthouse id 20
+// alba guesthouse id 30
+// alba guesthouse id 40
+
+// bókar í tour 9156
+const x = {
+    externalKey: "ChIJ0b0Jlrd01kgRFasKT-ZO4EQ", // googlePlaceId sem vísar í Alba Guesthouse
+    title: "alba guesthouse ehf",  // title úr googlePlace
+    key: "NA",
+    client: "5da3412fd938fb003b8a3575",
+    systemSpecific: {
+        ids: [10, 20, 30, 40]
+    }
+};

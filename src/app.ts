@@ -69,6 +69,7 @@ app.get("/bookingtest", async  (req: Request, res: Response) => {
 app.post("/new_booking/:tid", async  (req: Request, res: Response) => {
     const {tid} = req.params;
     try {
+
         const transaction = await Models.transaction
             .findById(tid)
             .populate({
@@ -82,91 +83,45 @@ app.post("/new_booking/:tid", async  (req: Request, res: Response) => {
         // const caren = new Services.Caren(apiConfig.apiConnectionInfo);
 
         const data = JSON.parse(transaction.parseddata.data);
+        console.log("data", data);
 
-        return res.send(200);
-        // data.dateTo = new Date(data.dateTo);
-        // data.dateFrom = new Date(data.dateFrom);
-        // const ref = await caren.book(data);
+        res.send({ref: Math.floor(Math.random() * 100001)});
+
+        
+
+        // return res.send(200);
+        // // data.dateTo = new Date(data.dateTo);
+        // // data.dateFrom = new Date(data.dateFrom);
+        // // const ref = await caren.book(data);
         // res.send({ref});
     } catch(e) {
         res.status(400).send(e);
     }
 });
 
-app.get("/avails/:tid/:cid", async  (req: Request, res: Response) => {
-    const {tid, cid} = req.params;
+
+app.post("/post/transform/:cid", async (req: Request, res: Response) => {
+    const {cid} = req.params;
+
     try {
-        const d = new Date();
-        d.setMonth(10);
         const apiConfig = await Models.clientapiconfig.findOne({client: cid});
         if(!apiConfig) throw Error("apiConfig not found");
         const bokun = new Services.Bokun(apiConfig.apiConnectionInfo);
         bokun.setClientId(cid);
-        const data = await bokun.getStartTimeId("26577", d);
-        res.send({id: data});
+        await bokun.postTransform(req.body);
+        res.send(req.body);
     } catch(e) {
         console.log("e", e);
-        res.status(400).send(e);
-    }
-});
-
-app.get("/paxTypes/:id/:cid", async (req: Request, res: Response) => {
-    const {key, cid} = req.params;
-
-    try {
-        const apiConfig = await Models.clientapiconfig.findOne({client: cid});
-        if(!apiConfig) throw Error("apiConfig not found");
-        const bokun = new Services.Bokun(apiConfig.apiConnectionInfo);
-        bokun.setClientId(cid);
-        bokun.setTransaction("5da49417d938fb003b8a3588");
-        const data = await bokun._getPaxTypes(req.params.id);
-        res.send(data);
-    } catch(e) {
         res.status(400).send({
             message: e.message
         });
     }
+
 });
 
-app.post("/pre/transform", (req: Request, res: Response) => {
+app.post("/pre/transform/:cid", (req: Request, res: Response) => {
     res.status(400).send({message: "not needed"});
 });
-
-app.post("/post/transform", (req: Request, res: Response) => {
-    res.status(400).send({message: "not needed"});
-});
-
-
-// app.get("/t/:id/:cid", async (req: Request, res: Response) => {
-//     const {id, cid} = req.params;
-
-//     try {
-//         const apiConfig = await Models.clientapiconfig.findOne({client: cid});
-//         if(!apiConfig) throw Error("apiConfig not found");
-//         const bokun = new Services.Bokun(apiConfig.apiConnectionInfo);
-//         bokun.setClientId(cid);
-//         bokun.setTransaction("5da49417d938fb003b8a3588");
-//         // @ts-ignore
-//         bokun.setData({
-//             pax: [
-//                 {paxType: "CHILD", paxCount: "2"},
-//                 {paxType: "UNCLE", paxCount: "6"},
-//                 {paxType: "ADULT", paxCount: "4"}
-//             ],
-//             activity: id
-//         });
-
-//         await bokun.transformPaxTypes();
-//         res.send(bokun.getData());
-//     } catch(e) {
-//         res.status(400).send({
-//             message: e.message
-//         });
-//     }
-// });
-
-
-
 
 
 
