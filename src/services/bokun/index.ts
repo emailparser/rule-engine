@@ -1,4 +1,4 @@
-import {ApiConfig, ParsedData, RequestConfig, PaxType} from "./interface";
+import {ApiConfig, ParsedData, Bookable, PaxType, PricingCategory,} from "./interface";
 import Axios from "axios";
 import {ITransformation} from "../../models/transformation";
 import * as Models from "../../models";
@@ -6,10 +6,6 @@ import {requestMethods, dateGranularity} from "./enum";
 import crypto from "crypto";
 const apiEndPoint = "https://api.bokun.is";
 
-/*
-    ATH ORRIGOO BÝST VIÐ FirstName ekki firrstName
-    skoða allarr breytur sem eru sendarr á origoo og skoða capital cases
-*/
 export default class Bokun{
     private apiConfig: ApiConfig;
     private data: ParsedData;
@@ -27,6 +23,77 @@ export default class Bokun{
     }
     public setTransaction(id: string){
         this.transctionId  = id;
+    }
+
+    public async book(data: ParsedData){
+        this.data = data;
+        const bookable = await this.getBookable();
+        console.log("bookable", bookable);
+    }
+
+    private async getBookable(): Promise<Bookable>{
+        await this.transformPaxTypes();
+        const startTimeId = await this.getStartTimeId(this.data.activity, this.data.fromDate.startTime);
+        const data: Bookable = {
+            activityRequest: {
+                activityId: this.data.activity,
+                pricingCategoryBookings: this.getPricingCategories(),
+                date: this.dateToString(this.data.fromDate.startTime, dateGranularity.day),
+                startTimeId: startTimeId,
+                ...this.pickupPlaceObj(),
+                ...this.dropoffPlaceObj(),
+            },
+            customer: {
+                email: this.getCustomerEmail(),
+                firstName: this.data.customer.firstName,
+                lastName: this.data.customer.lastName.split(" ").pop(),
+                phoneNumber: this.getCustomerPhone(),
+                phoneNumberCountryCode: "1"
+            },
+            paymentOption: "NOT_PAID"
+
+        };
+        return data;
+    }
+
+    private getPricingCategories(): PricingCategory[]{
+        const retArray = [];
+        for(const pax of this.data.pax){
+            retArray.push({
+                pricingCategoryId: pax.paxType
+            });
+        }
+        return retArray;
+    }
+
+    private getCustomerEmail(){
+        const email = this.data.customer.email ? this.data.customer.email : this.apiConfig.defaultEmail;
+        return email ? email : "noreply@emailparser.no";
+    }
+
+    private getCustomerPhone(){
+        const phone = this.data.customer.phoneNumber ? this.data.customer.phoneNumber : this.apiConfig.defaultPhone;
+        return phone ? phone : "333-333-3333";
+    }
+
+    private pickupPlaceObj(){
+        let location: string;
+        try {
+            location = this.data.pickupLocation.location;
+            return location ? {pickupPlaceId: location} : {};
+        } catch(e) {
+            return {};
+        }
+    }
+
+    private dropoffPlaceObj(){
+        let location: string;
+        try {
+            location = this.data.dropoffLocation.location;
+            return location ? {dropoffPlaceId: location} : {};
+        } catch(e) {
+            return {};
+        }
     }
 
     public getDateStringNow(): string{
@@ -72,12 +139,14 @@ export default class Bokun{
         const body = {
             "activityRequest": {
                 "activityId": 26577,
-                "rateId": 36587,
+                "rateId": 36587, // má sleppa??
                 "pricingCategoryBookings": [
                     { "pricingCategoryId": 16118 },
                 ],
                 "date": "2020-02-10",
-                "startTimeId": 56266
+                "startTimeId": 56266,
+                "dropoffPlaceId": 0,
+                "pickupPlaceId": 0,
             },
             "customer": {
                 "email": "John@example.com",
@@ -118,9 +187,7 @@ export default class Bokun{
             return a.externalKey.toString() === data.activity.toString();
         });
 
-
         const {system} = transformation.toObject();
-        console.log("system", system);
 
         if(!system) return;
         if(data.pickupLocation.needsPickup) 
@@ -419,19 +486,3 @@ export default class Bokun{
         }
     }
 }
-
-// alba geusthooue id 10
-// alba guesthouse id 20
-// alba guesthouse id 30
-// alba guesthouse id 40
-
-// bókar í tour 9156
-const x = {
-    externalKey: "ChIJ0b0Jlrd01kgRFasKT-ZO4EQ", // googlePlaceId sem vísar í Alba Guesthouse
-    title: "alba guesthouse ehf",  // title úr googlePlace
-    key: "NA",
-    client: "5da3412fd938fb003b8a3575",
-    systemSpecific: {
-        ids: [10, 20, 30, 40]
-    }
-};

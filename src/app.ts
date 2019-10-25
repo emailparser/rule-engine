@@ -50,8 +50,25 @@ app.get("/transformations/:key/:cid", async (req: Request, res: Response) => {
     }
 });
 
+app.post("/test_booking/:cid", async (req: Request, res: Response) => {
+    const {cid} = req.params;
+
+    try {
+        const apiConfig = await Models.clientapiconfig.findOne({client: cid});
+        const bokun = new Services.Bokun(apiConfig.apiConnectionInfo);
+        bokun.setClientId(cid);
+        req.body.fromDate.startTime = new Date(req.body.fromDate.startTime);
+        await bokun.book(req.body);
+        res.send({ref: 1});
+    } catch(e) {
+        console.log("e", e);
+        res.send(500);
+    }
+});
+
 app.get("/bookingtest", async  (req: Request, res: Response) => {
     try {
+        return;
         const bokun = new Services.Bokun({
             accessKey: "359d0d6169484192b7d50c35053cbfc0",
             secretKey: "6347136c95c14a899449d6aa9beb691d",
