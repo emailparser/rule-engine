@@ -30,114 +30,59 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/", (req: Request, res: Response) => {
-    res.send("<h1>Bokun.is service</h1>");
+    res.send("<h1>Roomer.is service</h1>");
 });
     
-app.get("/transformations/:key/:cid", async (req: Request, res: Response) => {
-    const {key, cid} = req.params;
+// app.get("/test", async (req: Request, res: Response) => {
+//     try {
+//         const roomer = new Services.Roomer({
+//             hotelKey: "c8019a96",
+//             applicationKey: "EMAILPARSER",
+//             secret: "M2NjNzBhY2IzMzVjNzczOWQyYTcyODJkNjJhMTNkZTNmZjI4ZmRjZjRlYTRkYWZiMGQ3NjY0M2QwNjRiMzEzNw=="
+//         });
+//         const data = await roomer.getAvailability();
+//         res.send(data);
+    
+//     } catch(e) {
+//         console.log("e", e.response.data);
+//         res.send(e.response.data);
+//     } 
+// });
 
-    try {
-        const apiConfig = await Models.clientapiconfig.findOne({client: cid});
-        if(!apiConfig) throw Error("apiConfig not found");
-        const bokun = new Services.Bokun(apiConfig.apiConnectionInfo);
-        bokun.setClientId(cid);
-        const data = await bokun.getTransformationsFor(key);
-        res.send(data);
-    } catch(e) {
-        res.status(400).send({
-            message: e.message
-        });
-    }
-});
+// app.get("/test-book", async (req: Request, res: Response) => {
+//     try {
+//         const roomer = new Services.Roomer({
+//             hotelKey: "c8019a96",
+//             applicationKey: "EMAILPARSER",
+//             secret: "M2NjNzBhY2IzMzVjNzczOWQyYTcyODJkNjJhMTNkZTNmZjI4ZmRjZjRlYTRkYWZiMGQ3NjY0M2QwNjRiMzEzNw=="
+//         });
+//         const data = await roomer.testBooking();
+//         res.send(data);
+    
+//     } catch(e) {
+//         console.log("e", e.response.data);
+//         res.send(e.response.data);
+//     } 
+// });
 
-app.post("/test_booking/:cid", async (req: Request, res: Response) => {
-    const {cid} = req.params;
-
-    try {
-        const apiConfig = await Models.clientapiconfig.findOne({client: cid});
-        const bokun = new Services.Bokun(apiConfig.apiConnectionInfo);
-        bokun.setClientId(cid);
-        req.body.fromDate.startTime = new Date(req.body.fromDate.startTime);
-        await bokun.book(req.body);
-        res.send({ref: 1});
-    } catch(e) {
-        console.log("e", e);
-        res.send(500);
-    }
-});
-
-app.get("/bookingtest", async  (req: Request, res: Response) => {
-    try {
-        return;
-        const bokun = new Services.Bokun({
-            accessKey: "359d0d6169484192b7d50c35053cbfc0",
-            secretKey: "6347136c95c14a899449d6aa9beb691d",
-            vendorId: "658",
-            defaultCurrency: "ISK",
-            defaultLang: "EN"
-        });
-        const x = await bokun.testMakeBooking();
-        res.send(x);
-    } catch(e) {
-        res.status(400).send(e);
-    }
-});
-
-app.post("/new_booking/:tid", async  (req: Request, res: Response) => {
-    const {tid} = req.params;
-    try {
-
-        const transaction = await Models.transaction
-            .findById(tid)
-            .populate({
-                path: "parseddata",
-                model: "parseddata"
-            });
-        if(!transaction) throw Error("transaction not found");
-        if(transaction.internalRef) throw Error("transaction has already been booked");
-
-        // const apiConfig = await Models.clientapiconfig.findOne({client: transaction.client});
-        // const caren = new Services.Caren(apiConfig.apiConnectionInfo);
-
-        const data = JSON.parse(transaction.parseddata.data);
-        console.log("data", data);
-
-        res.send({ref: Math.floor(Math.random() * 100001)});
-
-        
-
-        // return res.send(200);
-        // // data.dateTo = new Date(data.dateTo);
-        // // data.dateFrom = new Date(data.dateFrom);
-        // // const ref = await caren.book(data);
-        // res.send({ref});
-    } catch(e) {
-        res.status(400).send(e);
-    }
-});
 
 
 app.post("/post/transform/:cid", async (req: Request, res: Response) => {
-    const {cid} = req.params;
-
-    try {
-        const apiConfig = await Models.clientapiconfig.findOne({client: cid});
-        if(!apiConfig) throw Error("apiConfig not found");
-        const bokun = new Services.Bokun(apiConfig.apiConnectionInfo);
-        bokun.setClientId(cid);
-        await bokun.postTransform(req.body);
-        res.send(req.body);
-    } catch(e) {
-        console.log("e", e);
-        res.status(400).send({
-            message: e.message
-        });
-    }
-
+    res.status(400).send({message: "not needed"});
 });
 
 app.post("/pre/transform/:cid", (req: Request, res: Response) => {
     res.status(400).send({message: "not needed"});
+});
+
+app.post("*", async (req, res) => {
+    try {
+        const {data} = await Services.EmailParserAxios.post("api", req.url);
+        res.send(data);
+    } catch(e) {
+        
+        res.send(e);
+    }   
 });
 
 

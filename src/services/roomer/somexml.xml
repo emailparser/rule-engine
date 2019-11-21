@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rmrbmo:NewBooking contactGuest="idvalue0" externalBookingReference="TEST-BKNG-005" profileGuest="idvalue0" useStayTax="true" xmlns:rmrbmo="http://roomer.promoir.nl/datamodel/booking/modelobjects/2014/01/" xmlns:rmrbt="http://roomer.promoir.nl/datamodel/canonical/basetypes/2014/01/" xmlns:rmrds="http://roomer.promoir.nl/datamodel/canonical/datastructures/2014/01/" xmlns:rmrpbt="http://roomer.promoir.nl/datamodel/payment/basetypes/2014/01/" xmlns:rmrst="http://roomer.promoir.nl/datamodel/canonical/simpletypes/2014/01/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://roomer.promoir.nl/datamodel/booking/modelobjects/2014/01/ ../../main/schema/BookingDataModel/RoomerBookingDataModel_ModelObjects.xsd ">
+<rmrds:guest id="idvalue0" nationalityCode="NL">
+<rmrds:firstName>ROOMER</rmrds:firstName>
+<rmrds:middleNames>PROMOIR</rmrds:middleNames>
+<rmrds:lastName>TESTER</rmrds:lastName>
+<rmrds:gender>MALE</rmrds:gender>
+<rmrds:title>MR</rmrds:title>
+<rmrds:dateOfBirth>1980-07-03</rmrds:dateOfBirth>
+<rmrds:guestAgeCategory>ADULT</rmrds:guestAgeCategory>
+<rmrds:address>
+<rmrbt:houseNumber>15</rmrbt:houseNumber>
+<rmrbt:extension>a</rmrbt:extension>
+<rmrbt:street>Testweg</rmrbt:street>
+<rmrbt:postalCode>1234AB</rmrbt:postalCode>
+<rmrbt:municipality>Testendam</rmrbt:municipality>
+<rmrbt:state>Noord-Brabant</rmrbt:state>
+<rmrbt:country>NL</rmrbt:country>
+</rmrds:address>
+<rmrds:contactDetails>
+<rmrbt:telephone>+31612345678</rmrbt:telephone>
+<rmrbt:mobile>+31612345678</rmrbt:mobile>
+<rmrbt:email>r.p.tester@test.roomerpms.com</rmrbt:email>
+</rmrds:contactDetails>
+<rmrds:preferredLanguage>nl_NL</rmrds:preferredLanguage>
+</rmrds:guest>
+<rmrds:BaseRoomRequest arrivalDateTime="2020-03-12T12:00:00" departureDateTime="2020-03-13T10:00:00" externalRoomReference="TEST-BKNG-0" mainGuestId="idvalue0" rmrst:roomType="SGL" roomNotes="Room note 0">
+<rmrds:guest>idvalue0</rmrds:guest>
+<rmrds:ratePlan ratePlan="DR_0" rmrst:roomType="SGL" />
+<rmrds:remarks>
+<rmrbt:remark>Room remark 1</rmrbt:remark>
+</rmrds:remarks>
+<rmrds:Commission amount="5.75" currency="EUR"/>
+</rmrds:BaseRoomRequest>
+<rmrds:remarks>
+<rmrbt:remark>Booking remark 0</rmrbt:remark>
+</rmrds:remarks>
+<rmrds:channel code="BDC" name="Booking.com" location="HOTEL">
+<rmrds:CustomerProfileRef>0000000024</rmrds:CustomerProfileRef>
+</rmrds:channel>
+<rmrbmo:PaymentGuarantee>
+<rmrbmo:CreditCard cardHolderName="R.P. Tester" cardType="VISA" primaryAccountNumber="411111******1111">
+<rmrpbt:verificationData>
+    <rmrpbt:expiryDate>2022-05-31</rmrpbt:expiryDate>
+    <rmrpbt:CVC2>***</rmrpbt:CVC2>
+</rmrpbt:verificationData>
+</rmrbmo:CreditCard>
+</rmrbmo:PaymentGuarantee>
+</rmrbmo:NewBooking>
