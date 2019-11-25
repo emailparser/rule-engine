@@ -49,6 +49,7 @@
     "fbgraph": "^1.4.4",
     "jest": "^24.9.0",
     "jest-cli": "^24.9.0",
+    "json-rules-engine": "^5.0.0-alpha3",
     "jsontoxml": "^1.0.1",
     "lodash": "^4.17.13",
     "lusca": "^1.6.1",

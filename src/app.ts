@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import { MONGODB_URI } from "./util/secrets";
 import * as Services from "./services";
 import * as Models from "./models";
+import * as middleware from "./middleware";
 import Axios from "axios";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 //import * as routes from "./routes";
@@ -30,59 +31,73 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/", (req: Request, res: Response) => {
-    res.send("<h1>Roomer.is service</h1>");
-});
-    
-// app.get("/test", async (req: Request, res: Response) => {
-//     try {
-//         const roomer = new Services.Roomer({
-//             hotelKey: "c8019a96",
-//             applicationKey: "EMAILPARSER",
-//             secret: "M2NjNzBhY2IzMzVjNzczOWQyYTcyODJkNjJhMTNkZTNmZjI4ZmRjZjRlYTRkYWZiMGQ3NjY0M2QwNjRiMzEzNw=="
-//         });
-//         const data = await roomer.getAvailability();
-//         res.send(data);
-    
-//     } catch(e) {
-//         console.log("e", e.response.data);
-//         res.send(e.response.data);
-//     } 
-// });
-
-// app.get("/test-book", async (req: Request, res: Response) => {
-//     try {
-//         const roomer = new Services.Roomer({
-//             hotelKey: "c8019a96",
-//             applicationKey: "EMAILPARSER",
-//             secret: "M2NjNzBhY2IzMzVjNzczOWQyYTcyODJkNjJhMTNkZTNmZjI4ZmRjZjRlYTRkYWZiMGQ3NjY0M2QwNjRiMzEzNw=="
-//         });
-//         const data = await roomer.testBooking();
-//         res.send(data);
-    
-//     } catch(e) {
-//         console.log("e", e.response.data);
-//         res.send(e.response.data);
-//     } 
-// });
-
-
-
-app.post("/post/transform/:cid", async (req: Request, res: Response) => {
-    res.status(400).send({message: "not needed"});
+    res.send("<h1>Rule engine</h1>");
 });
 
-app.post("/pre/transform/:cid", (req: Request, res: Response) => {
-    res.status(400).send({message: "not needed"});
+// get operatrs
+app.get("/operators", (req, res) => {
+    res.send(Services.RuleEngine.getOperators());
 });
 
-app.post("*", async (req, res) => {
+app.get("/hooks", (req, res) => {
+    res.send(Services.RuleEngine.getLifeCycleHooks());
+});
+
+
+app.get("/actions", (req, res) => {
+    res.send(Services.RuleEngine.getActions());
+});
+
+app.post("/rule", async (req, res) => {
     try {
-        const {data} = await Services.EmailParserAxios.post("api", req.url);
-        res.send(data);
+        const doc = await Models.rule.create(req.body);
+        res.send(doc);
     } catch(e) {
-        
-        res.send(e);
-    }   
+        res.status(400).send({
+            message: "Error creating new rule"
+        });
+    }
+});
+
+app.post("/rule/:hook", middleware.validateHooks, async (req: Request, res: Response) => {
+    try {
+        const doc = await Models.rule.create({
+            ...req.body,
+            hook: req.params.hook
+        });
+        res.send(doc);
+    } catch (e) {
+        res.status(400).send(e);
+    }
+});
+
+app.post("/rule/:hook/parseddata/:pid", middleware.validateHooks, async (req: Request, res: Response) => {
+    const {pid, hook} = req.params;
+    try {
+        const parseddata = await Models.parsedData.findById(pid);
+        const rules = await Models.rule.find({client: parseddata.client, hook: hook});
+        const data = JSON.parse(parseddata.data);
+        Services.RuleEnforcer.reviewMany(rules, data);
+        const updated = await Models.parsedData.findByIdAndUpdate(pid, {
+            $set: {data: JSON.stringify(data)},
+        }, {
+            new: true
+        });
+        res.send(updated);
+    } catch (e) {
+        console.log("e", e);
+        res.status(400).send(e);
+    }
+});;
+
+
+// get lifecycles
+
+// apply rules
+
+app.post("/test_rule_engine", (req: Request, res: Response) => {
+    Services.RuleEnforcer.reviewMany(req.body.rules, req.body.data);
+    res.send(req.body.data);
 });
 
 
