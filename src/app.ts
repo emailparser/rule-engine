@@ -90,6 +90,28 @@ app.post("/rule/:hook/parseddata/:pid", middleware.validateHooks, async (req: Re
     }
 });;
 
+app.post("/rule/oncreate/email/:eid",  async (req: Request, res: Response) => {
+    const {eid} = req.params;
+    try {
+        const email = await Models.email.findById(eid).lean();
+        const clientEmail = await Models.clientEmail.findOne({email: email.to}).lean();
+        console.log("clientEmail", clientEmail);
+        const rules = await Models.rule.find({client: clientEmail.client, hook: "oncreate"});
+        console.log("rules", rules);
+        Services.RuleEnforcer.reviewMany(rules, email);
+        console.log("email", email);
+        const updated = await Models.email.findByIdAndUpdate(eid, {
+            $set: {...email},
+        }, {
+            new: true
+        });
+        res.send(updated);
+    } catch (e) {
+        console.log("e", e);
+        res.status(400).send(e);
+    }
+});;
+
 
 // get lifecycles
 

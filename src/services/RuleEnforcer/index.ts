@@ -12,7 +12,9 @@ export default class RuleEnforcer{
     private static enforceForEngine(engine: RuleEngine){
         engine
             .on("success", (action) => {
+                console.log("SUCCESS");
                 switch(action.do){
+                    
                     case "__setvalue__":
                         engine.setJSONvalue(action.accessor, action.value);
                         break;
