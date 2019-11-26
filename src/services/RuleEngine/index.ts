@@ -99,6 +99,8 @@ export default class RuleEngine{
     private __strin__(received: string, expected: string): boolean{
         if(!received) return false;
         if(typeof received !== "string") return false;
+        console.log("received", received);
+        console.log("expected", expected);
         return received.toLowerCase().includes(expected.toLowerCase());
     }
 
