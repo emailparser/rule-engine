@@ -72,6 +72,10 @@ app.post("/rule/:hook", middleware.validateHooks, async (req: Request, res: Resp
 });
 
 app.post("/rule/:hook/parseddata/:pid", middleware.validateHooks, async (req: Request, res: Response) => {
+
+
+    console.log(`Parsed data ${req.params.pid} is being edited according to rules`);
+
     const {pid, hook} = req.params;
     try {
         const parseddata = await Models.parsedData.findById(pid);
@@ -91,6 +95,9 @@ app.post("/rule/:hook/parseddata/:pid", middleware.validateHooks, async (req: Re
 });;
 
 app.post("/rule/oncreate/email/:eid",  async (req: Request, res: Response) => {
+    
+    console.log(`Email ${req.params.eid} is being edited according to rules`);
+
     const {eid} = req.params;
     try {
         const email = await Models.email.findById(eid).lean();
