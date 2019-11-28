@@ -9,6 +9,11 @@ const rules: {[key: string]: Rule} = {
         description: "Does the text include the following",
         dataType: "string"
     },
+    __strnin__: {
+        title: "does not includes",
+        description: "Does the text NOT include the following",
+        dataType: "string"
+    },
     __streq__: {
         title: "equals",
         description: "Does the text equal the following",

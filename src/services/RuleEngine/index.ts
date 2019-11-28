@@ -99,9 +99,11 @@ export default class RuleEngine{
     private __strin__(received: string, expected: string): boolean{
         if(!received) return false;
         if(typeof received !== "string") return false;
-        console.log("received", received);
-        console.log("expected", expected);
         return received.toLowerCase().includes(expected.toLowerCase());
+    }
+
+    private __strnin__(received: string, expected: string): boolean{
+        return !this.__strin__(received, expected);
     }
 
     private __streq__(received: string, expected: string): boolean{
@@ -111,9 +113,7 @@ export default class RuleEngine{
     }
 
     private __strne__(received: string, expected: string): boolean{
-        if(!received) return false;
-        if(typeof received !== "string") return false;
-        return received.toLowerCase() !== expected.toLowerCase();
+        return !this.__streq__(received, expected);
     }
 }
 

@@ -1,4 +1,5 @@
 import {RuleEngine} from "../";
+import { Ruleable } from "../../models/rule";
 export default class RuleEnforcer{
 
     public static reviewMany(rules: any[], data: any){
@@ -27,7 +28,6 @@ export default class RuleEnforcer{
             });
     }
 }
-
 
 
 

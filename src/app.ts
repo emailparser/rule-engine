@@ -7,6 +7,7 @@ import * as Services from "./services";
 import * as Models from "./models";
 import * as middleware from "./middleware";
 import Axios from "axios";
+import {Ruleable} from "./models/rule";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 //import * as routes from "./routes";
 
@@ -128,6 +129,85 @@ app.post("/test_rule_engine", (req: Request, res: Response) => {
     Services.RuleEnforcer.reviewMany(req.body.rules, req.body.data);
     res.send(req.body.data);
 });
+
+
+const rules: Ruleable[] = [
+    {
+        condition: {
+            all: [
+                {
+                    accessor: "body",
+                    operator: "__strin__",
+                    value: "icelandair us"
+                },
+                {
+                    accessor: "body",
+                    operator: "__strnin__",
+                    value: "tzoo"
+                },
+                {
+                    accessor: "from",
+                    operator: "__streq__",
+                    value: "davinci@icelandair.is"
+
+                }
+            ]
+        },
+        actions: [
+            {
+                do: "__setvalue__",
+                value: "us@ih.is",
+                accessor: "to"
+            }
+        ],
+        client: "1234",
+        hook: "oncreate"
+    },
+    {
+        condition: {
+            all: [
+                {
+                    accessor: "body",
+                    operator: "__strin__",
+                    value: "icelandair us"
+                },
+                {
+                    accessor: "body",
+                    operator: "__strin__",
+                    value: "tzoo"
+                },
+                {
+                    accessor: "from",
+                    operator: "__streq__",
+                    value: "davinci@icelandair.is"
+
+                }
+            ]
+        },
+        actions: [
+            {
+                do: "__setvalue__",
+                value: "tzus@ih.is",
+                accessor: "to"
+            }
+        ],
+        client: "1234",
+        hook: "oncreate"
+    }
+];
+
+const data = {
+    to: "somoe email",
+    from: "davinci@icelandair.is",
+    body: "some text icelandair us not tzoo"
+};
+
+Services.RuleEnforcer.reviewMany(rules, data);
+
+console.log("data", data);
+
+console.log("rules", rules);
+
 
 
 

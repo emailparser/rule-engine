@@ -26,14 +26,22 @@ interface Action{
     accessor?: string;
 }
 
+type Hook = "oncreate" | "beforesend"
 
-export interface ITransformation extends Document{
+interface IRule extends Document{
     client: any;
     condition: Condition;
     actions: Action[];
-    hook: string;
+    hook: Hook;
+}
+
+export interface Ruleable{
+    client: any;
+    condition: Condition;
+    actions: Action[];
+    hook: Hook;
 }
 
 
 
-export default model<ITransformation>("rule", schema, "rule");
+export default model<IRule>("rule", schema, "rule");
