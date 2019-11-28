@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
-import {model, Schema, Document} from "mongoose";
+import {model, Schema, Document, Types} from "mongoose";
 
 const schema = new Schema({
     client: { type: Schema.Types.ObjectId, ref: "client"},
     condition: {},
     actions: [{}],
-    hook: String
+    hook: String,
+    priority: Number
 }, {timestamps: true});
 
 
@@ -28,18 +29,23 @@ interface Action{
 
 type Hook = "oncreate" | "beforesend"
 
-interface IRule extends Document{
-    client: any;
-    condition: Condition;
-    actions: Action[];
-    hook: Hook;
-}
-
 export interface Ruleable{
     client: any;
     condition: Condition;
     actions: Action[];
     hook: Hook;
+    priority?: number;
+    prereq?: any;
+    _id?: any;
+}
+
+interface IRule extends Document{
+    client: any;
+    condition: Condition;
+    actions: Action[];
+    hook: Hook;
+    priority?: number;
+    prereq?: any;
 }
 
 
