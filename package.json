@@ -55,7 +55,7 @@
     "lodash": "^4.17.13",
     "lusca": "^1.6.1",
     "mongodb-memory-server": "^5.2.3",
-    "mongoose": "^5.6.0",
+    "mongoose": "^5.7.5",
     "node-stopwatch": "0.0.1",
     "nodemailer": "^6.2.1",
     "otpauth": "^5.0.3",
