@@ -2,7 +2,7 @@ version: "3"
 services:
   app:
       image: node:lts-alpine
-      container_name: carenbooker
+      container_name: rule-engine
       restart: always
       volumes:
         - /etc/timezone:/etc/timezone:ro
@@ -12,5 +12,5 @@ services:
         NODE_ENV: development
         TZ: "Europe/Oslo"
       ports:
-        - 14151:3000
+        - 20001:3000
       command: sh -c "npm i && npm run build && npm run serve"
