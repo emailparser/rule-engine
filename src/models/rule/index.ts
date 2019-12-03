@@ -6,7 +6,8 @@ const schema = new Schema({
     condition: {},
     actions: [{}],
     hook: String,
-    priority: Number
+    priority: Number,
+    comment: String
 }, {timestamps: true});
 
 
@@ -18,16 +19,17 @@ interface AtomicCondition{
     value: string;
 }
 
-type Condition = AllRule | AnyRule | AtomicCondition
+export type Condition = AllRule | AnyRule | AtomicCondition
 
-interface Action{
-    do: string;
+export interface Action{
+    do: Do;
     value?: string;
 
-    accessor?: string;
+    accessor?: any;
 }
 
 type Hook = "oncreate" | "beforesend"
+type Do = "__setvalue__" | "__sendparsemessage__"
 
 export interface Ruleable{
     client: any;
@@ -39,7 +41,7 @@ export interface Ruleable{
     _id?: any;
 }
 
-interface IRule extends Document{
+export interface Rule{
     client: any;
     condition: Condition;
     actions: Action[];
@@ -48,6 +50,7 @@ interface IRule extends Document{
     prereq?: any;
 }
 
+interface IRule extends Rule, Document{}
 
 
 export default model<IRule>("rule", schema, "rule");

@@ -64,10 +64,12 @@ export default class RuleEngine{
             return cond.any.some((sub: any) => this._validate(sub));
         else if(Object.entries(cond).length === 1 && cond.all)
             return cond.all.every((sub: any) => this._validate(sub));
-        else if(Object.entries(cond).length === 3 && (cond.accessor && cond.operator && cond.value))
+        else if(Object.entries(cond).length === 3 && (cond.accessor && cond.operator && cond.value !== null))
             return this._validateCondition(cond);
-        else 
+        else { 
+            console.log("cond", cond);
             throw Error("Invalid Conditions");
+        }
     }
 
     private _validateCondition(cond: ICondition): boolean{
@@ -114,6 +116,18 @@ export default class RuleEngine{
 
     private __strne__(received: string, expected: string): boolean{
         return !this.__streq__(received, expected);
+    }
+
+    private __strneq__(received: string, expected: string): boolean{
+        return !this.__streq__(received, expected);
+    }
+
+    private __valnisnull__(received: string, expected: string): boolean{
+        return received === null;
+    }
+
+    private __valnotnull__(received: string, expected: string): boolean{
+        return !this.__valnisnull__(received, expected);
     }
 }
 

@@ -4,3 +4,6 @@ export {default as rule} from "./rule";
 export {default as parsedData} from "./parsedData";
 export {default as email} from "./email";
 export {default as clientEmail} from "./clientEmail";
+
+require("./rule/test");
+require("./rule/testrules");
