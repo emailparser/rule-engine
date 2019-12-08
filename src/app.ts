@@ -79,12 +79,12 @@ app.post("/rule/:hook/parseddata/:pid", middleware.validateHooks, async (req: Re
 
     const {pid, hook} = req.params;
     try {
-        const parseddata = await Models.parsedData.findById(pid);
-        const rules = await Models.rule.find({client: parseddata.client, hook: hook});
-        const data = JSON.parse(parseddata.data);
-        Services.RuleEnforcer.reviewMany(rules, data);
+        const {data, client} = await Models.parsedData.findById(pid);
+        const rules = await Models.rule.find({ client: client, hook: hook });
+        const parsed = JSON.parse(data);
+        Services.RuleEnforcer.reviewMany(rules, parsed, client, parsed.bookingRef);
         const updated = await Models.parsedData.findByIdAndUpdate(pid, {
-            $set: {data: JSON.stringify(data)},
+            $set: {data: JSON.stringify(parsed)},
         }, {
             new: true
         });
@@ -106,7 +106,7 @@ app.post("/rule/oncreate/email/:eid",  async (req: Request, res: Response) => {
         console.log("clientEmail", clientEmail);
         const rules = await Models.rule.find({client: clientEmail.client, hook: "oncreate"});
         console.log("rules", rules);
-        Services.RuleEnforcer.reviewMany(rules, email);
+        Services.RuleEnforcer.reviewMany(rules, email, clientEmail.client, null);
         console.log("email", email);
         const updated = await Models.email.findByIdAndUpdate(eid, {
             $set: {...email},
@@ -124,11 +124,6 @@ app.post("/rule/oncreate/email/:eid",  async (req: Request, res: Response) => {
 // get lifecycles
 
 // apply rules
-
-app.post("/test_rule_engine", (req: Request, res: Response) => {
-    Services.RuleEnforcer.reviewMany(req.body.rules, req.body.data);
-    res.send(req.body.data);
-});
 
 
 export default app;

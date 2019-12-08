@@ -1,4 +1,4 @@
-type DataType = "string" | "array" | "number" | "object"
+type DataType = "string" | "array" | "number" | "object" | "any"
 
 export interface Rule{
     dataType: DataType;

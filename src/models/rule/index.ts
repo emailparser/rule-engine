@@ -23,13 +23,13 @@ export type Condition = AllRule | AnyRule | AtomicCondition
 
 export interface Action{
     do: Do;
-    value?: string;
+    value?: string | number;
 
     accessor?: any;
 }
 
 type Hook = "oncreate" | "beforesend"
-type Do = "__setvalue__" | "__sendparsemessage__"
+type Do = "__setvalue__" | "__sendparsemessage__" | "__setminute__" | "__sethour__"
 
 export interface Ruleable{
     client: any;

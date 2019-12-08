@@ -1,8 +1,12 @@
-type ActionType = 
+type ActionType =
     "__setvalue__" |
-    "__raiserr__";
+    "__raiserr__" |
+    "__sendparsemessage__" |
+    "__sethour__" |
+    "__setminute__";
+        
 
-type DataType = "string" | "any" | "accessor";
+type DataType = "string" | "any" | "accessor" | "date" | "number";
 
 interface AvailableActionParam{
     key: string;
@@ -43,6 +47,48 @@ const actions: AvailableAction[] = [
             title: "Message",
             description: "Send message to yourself when this happens (optional)"
         }] 
+    },
+    {
+        title: "Send parse message",
+        action: "__sendparsemessage__",
+        parameters: [{
+            key: "value",
+            type: "string",
+            title: "message",
+            description: "What message do you want to get when this happens?"
+        }]
+    },
+    {
+        title: "Change hours",
+        action: "__sethour__",
+        parameters: [{
+            key: "value",
+            type: "number",
+            title: "hour",
+            description: "What hour (0-23) do you want to set"
+        },
+        {
+            key: "accessor",
+            type: "accessor",
+            title: "Date",
+            description: "What date do you want to set?"
+        }]
+    },
+    {
+        title: "Change hours",
+        action: "__setminute__",
+        parameters: [{
+            key: "value",
+            type: "number",
+            title: "Hour",
+            description: "What minute (0-59) do you want to set"
+        },
+        {
+            key: "accessor",
+            type: "accessor",
+            title: "Date",
+            description: "What date do you want to set?"
+        }]
     }
 ];
 

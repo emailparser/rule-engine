@@ -49,7 +49,12 @@ export default class RuleEngine{
     private emit(result: boolean){
         for(const action of this.actions){
             const cbName: outcome = result ? "success" : "failure";
-            this[cbName](action);
+            try {
+                
+                this[cbName](action);
+            } catch (e) {
+                
+            }
         }
     }
         
@@ -60,16 +65,21 @@ export default class RuleEngine{
     }
 
     private _validate(cond: any): boolean{
-        if(Object.entries(cond).length === 1 && cond.any)
-            return cond.any.some((sub: any) => this._validate(sub));
-        else if(Object.entries(cond).length === 1 && cond.all)
-            return cond.all.every((sub: any) => this._validate(sub));
-        else if(Object.entries(cond).length === 3 && (cond.accessor && cond.operator && cond.value !== null))
-            return this._validateCondition(cond);
-        else { 
-            console.log("cond", cond);
-            throw Error("Invalid Conditions");
+        try {
+            if(Object.entries(cond).length === 1 && cond.any)
+                return cond.any.some((sub: any) => this._validate(sub));
+            else if(Object.entries(cond).length === 1 && cond.all)
+                return cond.all.every((sub: any) => this._validate(sub));
+            else if(Object.entries(cond).length === 3 && (cond.accessor && cond.operator && cond.value !== null))
+                return this._validateCondition(cond);
+            else { 
+                console.log("cond", cond);
+                throw Error("Invalid Conditions");
+            }
+        } catch (e) {
+            return false;
         }
+        
     }
 
     private _validateCondition(cond: ICondition): boolean{
@@ -77,7 +87,7 @@ export default class RuleEngine{
         return this[cond.operator](jsonValue, cond.value);
     }
 
-    private getJSONvalue(accessor: string){
+    public getJSONvalue(accessor: string){
         let o = this.receivedJSON;
         const a = accessor.split(".");
         for (var i = 0, n = a.length; i < n; i++) {

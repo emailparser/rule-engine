@@ -71,7 +71,22 @@ const rules: {[key: string]: Rule} = {
         title: "less than than or equal",
         description: "Is the amount than than than or equal",
         dataType: "number"
+    },
+
+    /**
+     * generic
+     */
+    __valnotnull__: {
+        title: "is not empty",
+        description: "Is the value no-empty i.e. it has a definite value",
+        dataType: "any"
+    },
+    __valnisnull__: {
+        title: "is empty",
+        description: "Is the value empty i.e. it has does NOT a definite value",
+        dataType: "any"
     }
+
 };
 
 export default rules;

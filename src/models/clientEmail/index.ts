@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
-import {Schema, model, Document} from "mongoose";
+import {Schema, model, Document, Types} from "mongoose";
 import client from "../client";
 import {isEmail} from "validator";
 
@@ -19,7 +19,7 @@ schema.pre("validate", async function(next){
 });
 
 export interface IClientMail extends Document{
-    client: Schema.Types.ObjectId;
+    client: Types.ObjectId;
     email: string;
 }
 export default model<IClientMail>("clientemail", schema, "clientemail");
